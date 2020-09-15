@@ -3,7 +3,9 @@ package flashcards
 import java.util.*
 
 fun main() {
-    Flashcards.create().checkDefinitions()
+    val flashcards = Flashcards()
+    flashcards.readFromInput()
+    flashcards.checkDefinitions()
 }
 
 val scanner = Scanner(System.`in`)

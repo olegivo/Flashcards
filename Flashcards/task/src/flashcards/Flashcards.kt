@@ -1,53 +1,61 @@
 package flashcards
 
-class Flashcards private constructor(private val cards: List<Card>) {
+class Flashcards {
+
+    private val cards = mutableListOf<Card>()
+
+    fun readFromInput() {
+        println("Input the number of cards:")
+        (1..scanner.nextLine().toInt()).forEach {
+            println("The card #$it:")
+            val term = inputTerm()
+            println("The definition of the card #$it:")
+            val definition: String = inputDefinition()
+            cards.add(Card(term = term, definition = definition))
+        }
+    }
 
     fun checkDefinitions() {
-        cards.forEach {
-            val message = if (it.checkDefinition()) {
-                "Correct!"
+        cards.forEach { card ->
+            println("Print the definition of \"${card.term}\":")
+            val nextLine = scanner.nextLine()
+            if (card.definition == nextLine) {
+                println("Correct!")
             } else {
-                "Wrong. The right answer is \"${it.definition}\"."
-            }
-            println(message)
-        }
-    }
-
-    companion object {
-        fun create(): Flashcards {
-            println("Input the number of cards:")
-            val cards = (1..scanner.nextLine().toInt()).map {
-                println("The card #$it:")
-                val term = scanner.nextLine()
-                println("The definition of the card #$it:")
-                val definition = scanner.nextLine()
-                Card(term = term, definition = definition)
-            }
-            return Flashcards(cards)
-        }
-    }
-
-    data class Card(val term: String, val definition: String) {
-        fun check(): Boolean {
-            val nextLine = scanner.nextLine()
-            return term == nextLine
-        }
-
-        fun checkDefinition(): Boolean {
-            println("Print the definition of \"$term\":")
-            val nextLine = scanner.nextLine()
-            return definition == nextLine
-        }
-
-        companion object {
-            fun readFromInput(): Card {
-                val definition = scanner.nextLine()
-                val term = scanner.nextLine()
-                return Card(
-                        term = term,
-                        definition = definition
+                print("Wrong. The right answer is \"${card.definition}\"")
+                println(cards.firstOrNull { it.definition == nextLine }
+                        ?.let { ", but your definition is correct for \"${it.term}\"." }
+                        ?: "."
                 )
             }
         }
     }
+
+    private fun inputDefinition(): String {
+        var definition: String
+        do {
+            definition = scanner.nextLine()
+            if (cards.any { card -> card.definition == definition }) {
+                println("The definition \"$definition\" already exists. Try again:")
+            } else {
+                break
+            }
+        } while (true)
+        return definition
+    }
+
+    private fun inputTerm(): String {
+        var term: String
+        do {
+            term = scanner.nextLine()
+            if (cards.any { card -> card.term == term }) {
+                println("The card \"$term\" already exists. Try again:")
+            } else {
+                break
+            }
+        } while (true)
+        return term
+    }
+
+    data class Card(val term: String, val definition: String)
 }
