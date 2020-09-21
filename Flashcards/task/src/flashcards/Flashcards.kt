@@ -51,6 +51,7 @@ class Flashcards {
                         ?.let { ", but your definition is correct for \"${it.term}\"." }
                         ?: "."
                 )
+                card.wrongAnswers++
             }
         }
     }
@@ -64,6 +65,7 @@ class Flashcards {
             cards.forEach {
                 appendLine(it.term)
                 appendLine(it.definition)
+                appendLine(it.wrongAnswers)
             }
         })
 //        file.copyTo(File("${Date().time}_exported_$filename"))
@@ -83,7 +85,11 @@ class Flashcards {
         var pos = 1
         val n = lines.first().toInt()
         repeat(n) {
-            val card = Card(lines[pos++], lines[pos++])
+            val card = Card(
+                    term = lines[pos++],
+                    definition = lines[pos++],
+                    wrongAnswers = lines[pos++].toInt()
+            )
             val existIndex = cards.indexOfFirst { it.term == card.term }
             if (existIndex >= 0) {
                 cards[existIndex] = card
@@ -94,8 +100,59 @@ class Flashcards {
         println("$n cards have been loaded.")
     }
 
+    fun log() {
+        println("File name::")
+        val filename = scanner.nextLine()
+        val file = File(filename)
+        file.writeText(log.toString())
+        println("The log has been saved.")
+    }
+
+    fun hardestCard() {
+        val byWrongAnswers = cards
+                .filter { it.wrongAnswers > 0 }
+                .sortedByDescending { it.wrongAnswers }
+        byWrongAnswers.firstOrNull()
+                ?.let { h ->
+                    val theHardest = byWrongAnswers.filter { it.wrongAnswers == h.wrongAnswers }
+                    if (theHardest.size > 1) {
+                        val joinToString = theHardest.joinToString { "\"${it.term}\"" }
+                        println("The hardest card are ${joinToString}. You have ${h.wrongAnswers} errors answering them.")
+                    } else {
+                        println("The hardest card is \"${h.term}\". You have ${h.wrongAnswers} errors answering it.")
+                    }
+                }
+                ?: run { println("There are no cards with errors.") }
+    }
+
+    fun resetStats() {
+        cards.forEach { it.wrongAnswers = 0 }
+        println("Card statistics have been reset.")
+    }
+
     private fun hasDefinition(definition: String) = cards.any { card -> card.definition == definition }
     private fun hasTerm(term: String) = cards.any { card -> card.term == term }
 
-    data class Card(val term: String, val definition: String)
+    data class Card(
+            val term: String,
+            val definition: String,
+            var wrongAnswers: Int = 0
+    )
+}
+
+val log = StringBuilder()
+val scanner = ScannerWrap()
+
+fun println(message: String) {
+    kotlin.io.println(message)
+    log.appendLine(message)
+}
+
+class ScannerWrap {
+    private val scanner = Scanner(System.`in`)
+
+    fun nextLine(): String = scanner.nextLine()
+            .also { log.appendLine("> $it") }
+
+    fun hasNextLine(): Boolean = scanner.hasNextLine()
 }

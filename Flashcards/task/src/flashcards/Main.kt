@@ -1,11 +1,9 @@
 package flashcards
 
-import java.util.*
-
 fun main() {
     val flashcards = Flashcards()
     loop@ while (scanner.hasNextLine()) {
-        println("Input the action (add, remove, import, export, ask, exit):")
+        println("Input the action (add, remove, import, export, ask, exit, log, hardest card, reset stats):")
         val command = scanner.nextLine()
         when (command) {
             "add" -> flashcards.add()
@@ -13,6 +11,9 @@ fun main() {
             "ask" -> flashcards.ask()
             "export" -> flashcards.export()
             "import" -> flashcards.import()
+            "log" -> flashcards.log()
+            "hardest card" -> flashcards.hardestCard()
+            "reset stats" -> flashcards.resetStats()
             "exit" -> {
                 println("Bye bye!")
                 break@loop
@@ -20,5 +21,3 @@ fun main() {
         }
     }
 }
-
-val scanner = Scanner(System.`in`)
