@@ -56,9 +56,13 @@ class Flashcards {
         }
     }
 
-    fun export() {
-        println("File name::")
-        val filename = scanner.nextLine()
+    fun export(externalFilename: String? = null) {
+        val filename = if (externalFilename != null) {
+            externalFilename
+        } else {
+            println("File name::")
+            scanner.nextLine()
+        }
         val file = File(filename)
         file.writeText(buildString {
             appendLine(cards.size)
@@ -72,9 +76,13 @@ class Flashcards {
         println("${cards.size} cards have been saved.")
     }
 
-    fun import() {
-        println("File name::")
-        val filename = scanner.nextLine()
+    fun import(externalFilename: String? = null) {
+        val filename = if (externalFilename != null) {
+            externalFilename
+        } else {
+            println("File name::")
+            scanner.nextLine()
+        }
         val file = File(filename)
         if (!file.exists()) {
             println("File not found.")
